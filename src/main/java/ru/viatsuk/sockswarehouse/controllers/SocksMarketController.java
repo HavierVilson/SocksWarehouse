@@ -14,6 +14,8 @@ import ru.viatsuk.sockswarehouse.model.Size;
 import ru.viatsuk.sockswarehouse.model.Socks;
 import ru.viatsuk.sockswarehouse.services.impl.SocksStockServiceImpl;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/socks")
 @Tag(name = "Socks market", description = "CRUD операции для работы со складом носков.")
@@ -24,7 +26,7 @@ public class SocksMarketController {
         this.socksStockService = socksStockService;
     }
 
-    @GetMapping("/get/{color}&{size}&{cottonMin}&{cottonMax}")
+    @GetMapping("")
     @Operation(summary = "Вывод количества товара.", description = "Вывод количества носков по заданным параметрам.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -34,10 +36,10 @@ public class SocksMarketController {
             @ApiResponse(responseCode = "500",
                     description = "Произошла ошибка, не зависящая от вызывающей стороны.")
     })
-    public ResponseEntity<Object> getSocks(@PathVariable Color color,
-                                           @PathVariable Size size,
-                                           @PathVariable  int cottonMin,
-                                           @PathVariable  int cottonMax){
+    public ResponseEntity<Object> getSocks(@RequestParam Color color,
+                                           @RequestParam Size size,
+                                           @RequestParam int cottonMin,
+                                           @RequestParam int cottonMax){
         int socksCount = socksStockService.getSocks(color, size, cottonMin, cottonMax);
         if(socksCount == 0){
             ResponseEntity.notFound().build();
@@ -46,7 +48,7 @@ public class SocksMarketController {
     }
 
 
-    @PostMapping("/add")
+    @PostMapping()
     @Operation(summary = "Приход товара на склад.", description = "Добавление носков на склад по их параметрам.")
     @ApiResponses (value = {
             @ApiResponse(responseCode = "200",
@@ -59,12 +61,12 @@ public class SocksMarketController {
             @ApiResponse(responseCode = "500",
                     description = "Произошла ошибка, не зависящая от вызывающей стороны.")
     })
-    public ResponseEntity<Socks> addSocks (@RequestBody Socks socks) {
+    public ResponseEntity<Socks> addSocks (@RequestBody @Valid Socks socks) {
         socksStockService.addSocks(socks);
         return ResponseEntity.ok().body(socks);
     }
 
-    @PutMapping("/edit")
+    @PutMapping()
     @Operation(summary = "Отпуск товара со склада.",
             description = "Получение носков со склада по параметрам, на складе количество уменьшается.")
     @ApiResponses (value = {
@@ -78,7 +80,7 @@ public class SocksMarketController {
             @ApiResponse(responseCode = "500",
                     description = "Произошла ошибка, не зависящая от вызывающей стороны.")
     })
-    public ResponseEntity<Socks> editSocks(@RequestBody Socks socks){
+    public ResponseEntity<Socks> editSocks(@RequestBody @Valid Socks socks){
         Socks socks1 = socksStockService.editSocksFromStock(socks);
         if(socks1 == null){
             ResponseEntity.notFound().build();
@@ -86,7 +88,7 @@ public class SocksMarketController {
         return ResponseEntity.ok(socks1);
     }
 
-    @DeleteMapping("/remove")
+    @DeleteMapping()
     @Operation(summary = "Списание товара со склада.",
             description = "Получение носков со склада по параметрам, на складе количество уменьшается.")
     @ApiResponses (value = {
@@ -100,7 +102,7 @@ public class SocksMarketController {
             @ApiResponse(responseCode = "500",
                     description = "Произошла ошибка, не зависящая от вызывающей стороны.")
     })
-    public ResponseEntity<Void> deleteSocks(@RequestBody Socks socks){
+    public ResponseEntity<Void> deleteSocks(@RequestBody @Valid Socks socks){
         if(socksStockService.removeSocks(socks)){
             return ResponseEntity.ok().build();
         }

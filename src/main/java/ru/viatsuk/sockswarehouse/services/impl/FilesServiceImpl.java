@@ -2,6 +2,7 @@ package ru.viatsuk.sockswarehouse.services.impl;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ru.viatsuk.sockswarehouse.exception.FileProcessingException;
 import ru.viatsuk.sockswarehouse.services.FilesService;
 
 import java.io.File;
@@ -84,7 +85,7 @@ public class FilesServiceImpl implements FilesService {
             Files.createFile(path1);
             return true;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new FileProcessingException();
         }
     }
 
